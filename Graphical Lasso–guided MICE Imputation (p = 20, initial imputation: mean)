@@ -1,4 +1,4 @@
-# Title: Graphical Lasso–guided MICE Imputation (p = 20, initial mean imputation)
+# Title: Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean)
 
 # 1) Setup -------------------------------------------------
 library(MASS)
