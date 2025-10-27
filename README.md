@@ -5,8 +5,8 @@ the latent dependency structure (precision matrix) among variables can be recove
 from high-dimensional data with missing values, using a combination of  
 **Graphical Lasso (Glasso)** and **Multiple Imputation by Chained Equations (MICE)**.
 
-The study assumes a high-dimensional scenario (𝑝 > 𝑛) where  
-the number of variables exceeds the sample size,  
+The study assumes a setting where the number of variables (p)  
+is comparable to or smaller than the sample size (n),  
 and approximately 10% of data entries are missing completely at random (MCAR).  
 Several imputation strategies are compared under this unified simulation framework.
 
@@ -17,7 +17,7 @@ Several imputation strategies are compared under this unified simulation framewo
 The objective of this study is to propose and evaluate a  
 **Graphical Lasso–guided MICE algorithm**,  
 which integrates missing data imputation and network structure estimation  
-into a unified, iterative procedure.
+into a unified, iterative framework.
 
 Since the simulation is conducted on synthetically generated data  
 with a known true structure (the ground-truth precision matrix Ω),  
@@ -65,7 +65,7 @@ the estimated network from each method can be directly compared with the truth.
 
 ## 3. Simulation Procedure
 
-1. Generate high-dimensional data (e.g., 𝑝 = 20 or 50, 𝑛 = 100).  
+1. Generate data (e.g., p = 20 or 50, n = 100).  
 2. Introduce 10% missing values under MCAR.  
 3. Perform initial mean imputation or single-step MICE.  
 4. Estimate the precision matrix via Glasso and select optimal ρ using BIC.  
@@ -81,10 +81,10 @@ the estimated network from each method can be directly compared with the truth.
 
 | File Name | Main Setting | Description |
 |------------|--------------|--------------|
-| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE).` | p = 20, initial imputation: MICE | Baseline version |
-| `simulation_glasso_mice_p50.R` | p = 50, initial imputation: MICE | High-dimensional scenario (p > n) |
-| `simulation_glasso_mice_p20_mean.R` | p = 20, initial imputation: mean | Comparison with mean-based initialization |
-| `simulation_glasso_mice_p20_diag0.R` | p = 20, initial imputation: mean, diag(wi)=0 | Version removing diagonal elements in inverse covariance voting |
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE).R` | p = 20, initial imputation: MICE | Baseline experiment for the proposed Glasso–MICE algorithm |
+| `Graphical Lasso–guided MICE Imputation (p = 50, initial imputation: MICE).R` | p = 50, initial imputation: MICE | Extended experiment with increased dimensionality to test scalability |
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean).R` | p = 20, initial imputation: mean | Baseline reproduced using mean imputation instead of MICE initialization |
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean, diag(wi)=0 in voting).R` | p = 20, initial imputation: mean, diag(wi)=0 | Variant that sets diagonal elements of the precision matrix to zero during the voting step |
 
 ---
 
