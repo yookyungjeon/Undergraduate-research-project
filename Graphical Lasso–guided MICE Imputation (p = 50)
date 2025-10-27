@@ -1,10 +1,4 @@
-############################################################
-# Graphical Lasso–guided MICE Imputation (p = 50, n = 100)
-# - Builds precision matrix with chain structure
-# - Injects MCAR missingness (10%)
-# - Iterative MICE with predictor matrix from glasso path (BIC-selected rho)
-# - Compares recovered graph via ROC/AUC across methods
-############################################################
+# Title: Graphical Lasso–guided MICE Imputation (p = 50, n = 100)
 
 # 1) Setup -------------------------------------------------
 library(MASS)
