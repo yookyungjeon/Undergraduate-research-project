@@ -32,7 +32,7 @@ for (run in 1:10) {
   }
   Sigma <- solve(Omega)
 
-  # (ii) Draw data from N(0, Sigma) with p > n
+  # (ii) Draw data from N(0, Sigma)
   complete_data <- mvrnorm(n, rep(0, p), Sigma)
 
   # (iii) Inject MCAR missingness at rate 0.1
