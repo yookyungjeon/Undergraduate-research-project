@@ -1,4 +1,4 @@
-# Title: Graphical Lasso–guided MICE Imputation (p = 50, n = 100)
+# Title: Graphical Lasso–guided MICE Imputation (p = 50, initial imputation: MICE)
 
 # 1) Setup -------------------------------------------------
 library(MASS)
@@ -23,7 +23,7 @@ for (run in 1:10) {
   print(paste("Starting run", run))
   set.seed(run * 100)
 
-  ### 2-1) Generate data
+  # 2-1) Generate data
   # (i) Build precision (Omega) with 1 on diag and 0.5 on immediate off-diagonals
   Omega <- diag(1, p)
   for (i in 1:(p - 1)) {
@@ -40,7 +40,7 @@ for (run in 1:10) {
   data_na <- complete_data
   data_na[missing_pattern == 1] <- NA
 
-  ### 2-2) Initial single-iteration imputation (to remove NA blocks)
+  # 2-2) Initial single-iteration imputation (to remove NA blocks)
   start_time <- Sys.time()
   initial_imputed_data <- mice(data_na, m = 1, maxit = 1, seed = 500, printFlag = FALSE)
   data <- complete(initial_imputed_data, action = 1)
@@ -48,7 +48,7 @@ for (run in 1:10) {
   initial_imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Initial Imputation", time = initial_imputation_time)))
 
-  ### 2-3) Iterative imputation guided by glasso (predictorMatrix from BIC-selected rho)
+  # 2-3) Iterative imputation guided by glasso (predictorMatrix from BIC-selected rho)
   start_time <- Sys.time()
 
   for (data_set_number in 1:5) {
@@ -93,7 +93,7 @@ for (run in 1:10) {
   imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Imputation", time = imputation_time)))
 
-  ### 2-4) ROC evaluation against true Omega -----------------
+  # 2-4) ROC evaluation against true Omega -----------------
 
   # True graph as binary (1 = nonzero, 0 = zero)
   Omega_bin <- ifelse(abs(Omega) > 0, 1, 0)
@@ -137,7 +137,7 @@ for (run in 1:10) {
     return(combined_Omega_est_bin)
   }
 
-  ## (i) Proposed method (pseudo-complete via glasso-guided MICE)
+  # (i) Proposed method (pseudo-complete via glasso-guided MICE)
   start_time <- Sys.time()
   dataset1 <- mget(paste0("pseudo_complete", 1:5))
   Omega_imputation_maj <- calculate_majority_vote(dataset1, rho_values)
@@ -148,7 +148,7 @@ for (run in 1:10) {
   roc_time1 <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "ROC by Proposed Method", time = roc_time1)))
 
-  ## (ii) Oracle completed data (no missingness)
+  # (ii) Oracle completed data (no missingness)
   start_time <- Sys.time()
   dataset2 <- list(completed_data)
   Omega_oracle_bin <- calculate_majority_vote(dataset2, rho_values)
@@ -159,7 +159,7 @@ for (run in 1:10) {
   roc_time2 <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "ROC by Completed Data", time = roc_time2)))
 
-  ## (iii) MICE default (m = 5), then majority vote
+  # (iii) MICE default (m = 5), then majority vote
   start_time <- Sys.time()
   imputed_data1 <- mice(data_na, m = 5, seed = 123, printFlag = FALSE)
   end_time <- Sys.time()
@@ -177,7 +177,7 @@ for (run in 1:10) {
   roc_time3 <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "ROC by Mice Default", time = roc_time3)))
 
-  ## (iv) MICE with lasso.select.norm, then majority vote
+  # (iv) MICE with lasso.select.norm, then majority vote
   start_time <- Sys.time()
   imputed_data2 <- mice(data_na, method = "lasso.select.norm", m = 5, seed = 123, printFlag = FALSE)
   end_time <- Sys.time()
