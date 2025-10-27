@@ -99,22 +99,3 @@ install.packages(c(
   "MASS", "mice", "glasso", "pracma",
   "ROCR", "ggplot2", "gridExtra", "grid"
 ))
-
-### (2) Execution
-
-1. Run the desired R script in your R or RStudio environment.  
-2. Each simulation automatically runs 10 repetitions (`run = 1:10`).  
-3. The outputs include:  
-   - ROC curves for each method and averaged ROC plots  
-   - AUC summary table (`auc_values`)  
-   - Execution time summary (`time_df`)
-
----
-
-## 6. Interpretation of Results
-
-- ROC curves closer to the upper-left corner indicate more accurate network recovery.  
-- The **Proposed Method** generally achieves higher AUC values than standard MICE approaches,  
-  demonstrating the benefit of iterative Glasso-guided imputation.  
-- The **diag(wi)=0** version removes self-dependencies,  
-  improving interpretability and comparability of network structures.
