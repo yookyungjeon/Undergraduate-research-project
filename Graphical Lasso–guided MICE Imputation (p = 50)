@@ -40,7 +40,7 @@ for (run in 1:10) {
   data_na <- complete_data
   data_na[missing_pattern == 1] <- NA
 
-  ### 3) Initial single-iteration imputation (to remove NA blocks)
+  ### 2-2) Initial single-iteration imputation (to remove NA blocks)
   start_time <- Sys.time()
   initial_imputed_data <- mice(data_na, m = 1, maxit = 1, seed = 500, printFlag = FALSE)
   data <- complete(initial_imputed_data, action = 1)
@@ -48,7 +48,7 @@ for (run in 1:10) {
   initial_imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Initial Imputation", time = initial_imputation_time)))
 
-  ### 4) Iterative imputation guided by glasso (predictorMatrix from BIC-selected rho)
+  ### 2-3) Iterative imputation guided by glasso (predictorMatrix from BIC-selected rho)
   start_time <- Sys.time()
 
   for (data_set_number in 1:5) {
@@ -93,7 +93,7 @@ for (run in 1:10) {
   imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Imputation", time = imputation_time)))
 
-  ### 5) ROC evaluation against true Omega -----------------
+  ### 2-4) ROC evaluation against true Omega -----------------
 
   # True graph as binary (1 = nonzero, 0 = zero)
   Omega_bin <- ifelse(abs(Omega) > 0, 1, 0)
