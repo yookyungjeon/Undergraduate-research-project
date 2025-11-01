@@ -1,101 +1,115 @@
-# High-dimensional Missing Data Imputation Using Graphical Lasso and MICE
+# Graphical Lasso–guided MICE — Simulation Study on High-Dimensional Missing Data Imputation
 
-This repository contains R simulation code designed to evaluate how accurately  
-the latent dependency structure (precision matrix) among variables can be recovered  
-from high-dimensional data with missing values, using a combination of  
-**Graphical Lasso (Glasso)** and **Multiple Imputation by Chained Equations (MICE)**.
-
-The study assumes a setting where the number of variables (p)  
-is comparable to or smaller than the sample size (n),  
-and approximately 10% of data entries are missing completely at random (MCAR).  
-Several imputation strategies are compared under this unified simulation framework.
-
----
 
 ## 1. Research Overview
 
-The objective of this study is to propose and evaluate a  
-**Graphical Lasso–guided MICE algorithm**,  
-which integrates missing data imputation and network structure estimation  
-into a unified, iterative framework.
+This repository presents a simulation study of the  
+**Graphical Lasso–guided Multiple Imputation by Chained Equations (Glasso-MICE)** algorithm,  
+designed to improve missing data imputation in **high-dimensional settings**.  
 
-Since the simulation is conducted on synthetically generated data  
-with a known true structure (the ground-truth precision matrix Ω),  
-the estimated network from each method can be directly compared with the truth.
+The core idea is to estimate the **conditional dependency structure (precision matrix)**  
+using **Graphical Lasso** and incorporate this structure into the  
+**MICE predictor matrix** to enhance imputation accuracy.  
+Rather than imputing values independently, this approach enables  
+**structure-guided imputation** that reflects the underlying network relationships among variables.
 
 ---
 
-## 2. Methodology Summary
+## 2. Research Objectives
 
-### (1) Data Generation and Missingness Introduction
+- Improve imputation accuracy under **high-dimensional conditions**  
+- Integrate **Graphical Lasso–estimated dependency structures** into the MICE process  
+- Compare the effects of different **initial imputations** (mean vs. MICE)  
+  and **structural constraints** (excluding diagonal entries in voting)  
+- Evaluate performance against **Default MICE**, **Lasso-based MICE**, and **Oracle (complete data)** settings  
 
-- Construct a precision matrix (Ω) with unit diagonal elements  
-  and 0.5 off-diagonal connections between adjacent variables (first-order dependency).  
-- Generate 100 samples from a multivariate normal distribution 𝑁(0, Σ), where Σ = Ω⁻¹.  
-- Randomly remove 10% of entries to introduce missing values (MCAR mechanism).
+---
 
-### (2) Proposed Method: Graphical Lasso–MICE (Proposed Method)
+## 3. Simulation Overview
 
-- Perform an initial imputation using either **mean imputation** or a single iteration of **MICE**.  
-- Estimate the precision matrix Ω via **Graphical Lasso (Glasso)** and select the optimal ρ using **BIC**.  
-- Update MICE’s predictor matrix based on the nonzero structure of the estimated Ω.  
-- Repeat the MICE–Glasso procedure iteratively (5 iterations per run).  
-- Conduct 5 complete runs and determine the final dependency structure  
-  via **majority voting** across the five results.  
-- In some versions, the **diagonal elements of the precision matrix (wi)**  
-  are explicitly set to zero during voting to remove self-connections.
-
-### (3) Comparison Methods
+Each simulation examines how accurately different imputation strategies  
+recover the true dependency structure (precision matrix)  
+when **10% MCAR (Missing Completely At Random)** values are introduced.  
 
 | Method | Description |
 |--------|--------------|
-| **MICE Default** | Standard MICE using the default predictor matrix |
-| **MICE Lasso** | MICE using LASSO regression for high-dimensional data |
-| **Completed Data** | Single estimation result from the final iteration (without voting) |
-| **Proposed Method** | Iterative Graphical Lasso–guided MICE (proposed algorithm) |
+| **Proposed (Glasso-guided MICE)** | Iterative MICE guided by precision matrices estimated via Graphical Lasso |
+| **Completed Data (Oracle)** | Benchmark estimation from complete data without missingness |
+| **MICE (Default)** | Standard MICE assuming variable independence |
+| **MICE (Lasso)** | MICE using lasso-based conditional models (`lasso.select.norm`) |
 
-### (4) Performance Evaluation
-
-- Each estimated Ω is compared with the true Ω.  
-- Accuracy is evaluated using **ROC (Receiver Operating Characteristic)** curves  
-  and the **AUC (Area Under the Curve)** metric.  
-- A higher AUC (closer to 1) indicates better recovery of the true network structure.
+Each method is repeated across 10 random seeds,  
+and evaluated using **FPR (False Positive Rate)**, **TPR (True Positive Rate)**,  
+and **AUC (Area Under the ROC Curve)**.
 
 ---
 
-## 3. Simulation Procedure
+## 4. Workflow
 
-1. Generate data (e.g., p = 20 or 50, n = 100).  
-2. Introduce 10% missing values under MCAR.  
-3. Perform initial mean imputation or single-step MICE.  
-4. Estimate the precision matrix via Glasso and select optimal ρ using BIC.  
-5. Update the MICE predictor matrix based on the Glasso-estimated structure.  
-6. Repeat the above steps 5 times per run.  
-7. Apply **majority voting** to determine the final network structure.  
-8. Compute ROC curves and AUC for evaluation.  
-9. Compare results across methods: Proposed, MICE Default, MICE Lasso, and Completed Data.
-
----
-
-## 4. Included Scripts
-
-| File Name | Main Setting | Description |
-|------------|--------------|--------------|
-| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE).R` | p = 20, initial imputation: MICE | Baseline experiment for the proposed Glasso–MICE algorithm |
-| `Graphical Lasso–guided MICE Imputation (p = 50, initial imputation: MICE).R` | p = 50, initial imputation: MICE | Extended experiment with increased dimensionality to test scalability |
-| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean).R` | p = 20, initial imputation: mean | Baseline reproduced using mean imputation instead of MICE initialization |
-| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean, diag(wi)=0 in voting).R` | p = 20, initial imputation: mean, diag(wi)=0 | Variant that sets diagonal elements of the precision matrix to zero during the voting step |
+| Step | Description |
+|------|--------------|
+| ① | Load required R packages and set simulation parameters |
+| ② | Generate multivariate normal data with a known precision matrix |
+| ③ | Introduce 10% MCAR missingness |
+| ④ | Perform initial imputation (mean or MICE) |
+| ⑤ | Estimate network structure via Graphical Lasso and use it in MICE predictor matrix |
+| ⑥ | Compare Proposed, MICE, MICE-Lasso, and Completed Data methods |
+| ⑦ | Calculate FPR, TPR, and AUC, and visualize ROC curves |
 
 ---
 
-## 5. How to Run
+## 5. Repository Structure
 
-### (1) Required R Packages
+| File | Description |
+|------|--------------|
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean).R` | Baseline experiment using mean initialization |
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: mean, diag(wi)=0 in voting).R` | Version excluding diagonal elements during voting |
+| `Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE).R` | Medium-dimensional scenario initialized with MICE |
+| `Graphical Lasso–guided MICE Imputation (p = 50, initial imputation: MICE).R` | High-dimensional (𝑝 > 𝑛) extension for scalability testing |
 
-Install the following R packages before running the scripts:
+---
+
+## 6. Required Packages
+
+| Package | Purpose |
+|----------|----------|
+| `MASS` | Generation of multivariate normal data |
+| `glasso` | Estimation of sparse precision matrices via Graphical Lasso |
+| `mice` | Multiple Imputation by Chained Equations |
+| `pracma` | Numerical integration (`trapz`) for AUC computation |
+| `ROCR` | ROC curve calculation and performance metrics |
+| `ggplot2` | Visualization of ROC curves |
+| `gridExtra`, `grid` | Plot arrangement and layout management |
+
+---
+
+## 7. Summary of Results
+
+- **Proposed (Glasso-guided MICE)**  
+  Incorporating network structures from Graphical Lasso  
+  led to higher AUC values and improved structural recovery compared to standard MICE.  
+
+- **MICE (Default / Lasso)**  
+  Provided stable imputations but underperformed in network reconstruction accuracy.  
+
+- **Completed Data (Oracle)**  
+  Serves as the upper performance bound for model comparison.  
+
+All results are summarized as averaged ROC curves (across 10 runs),  
+AUC comparison tables, and timing summaries for each simulation step.
+
+---
+
+## 8. How to Run
 
 ```r
+# Install required packages
 install.packages(c(
   "MASS", "mice", "glasso", "pracma",
   "ROCR", "ggplot2", "gridExtra", "grid"
 ))
+
+
+# Example execution
+source("Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE).R")
+
