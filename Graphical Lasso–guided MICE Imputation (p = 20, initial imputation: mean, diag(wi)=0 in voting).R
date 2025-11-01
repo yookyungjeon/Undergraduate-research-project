@@ -25,7 +25,7 @@ for (run in 1:10) {
   print(paste("Starting run", run))
   set.seed(run * 100)
 
-  # 2-1) Generate data ------------------------------------
+  # 2-1) Generate data
   # (i) Precision matrix (Omega): 1 on diagonal, 0.5 on immediate off-diagonals
   Omega <- diag(1, p)
   for (i in 1:(p - 1)) {
@@ -43,7 +43,7 @@ for (run in 1:10) {
   data_na[missing_pattern == 1] <- NA
 
 
-  # 2-2) Initial mean imputation -----------------------------
+  # 2-2) Initial mean imputation 
   start_time <- Sys.time()
 
   initial_imputation <- function(data) {
@@ -64,7 +64,7 @@ for (run in 1:10) {
                                                 time = difftime(end_time, start_time, units = "mins"))))
 
 
-  # 2-3) Iterative MICE guided by glasso ---------------------
+  # 2-3) Iterative MICE guided by glasso 
   start_time <- Sys.time()
 
   for (data_set_number in 1:5) {
@@ -110,7 +110,7 @@ for (run in 1:10) {
                                                 time = difftime(end_time, start_time, units = "mins"))))
 
 
-  # 2-4) ROC evaluation vs. true Omega -----------------------
+  # 2-4) ROC evaluation vs. true Omega 
   Omega_bin <- ifelse(abs(Omega) > 0, 1, 0)
   diag(Omega_bin) <- 0
   rho_values <- seq(0, 200, by = 1)
