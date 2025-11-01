@@ -1,5 +1,6 @@
 # Title: Graphical Lasso–guided MICE Imputation (p = 20, initial imputation: MICE)
 
+
 # 1) Setup -------------------------------------------------
 library(MASS)
 library(glasso)
@@ -93,7 +94,7 @@ for (run in 1:10) {
   imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Imputation", time = imputation_time)))
 
-  # 2-4) ROC evaluation vs. true Omega ---------------------
+  # 2-4) ROC evaluation vs. true Omega 
 
   # True graph as binary matrix
   Omega_bin <- ifelse(abs(Omega) > 0, 1, 0)
