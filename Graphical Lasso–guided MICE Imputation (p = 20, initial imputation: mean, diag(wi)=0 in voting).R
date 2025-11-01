@@ -37,7 +37,7 @@ for (run in 1:10) {
   # (ii) Generate multivariate normal data
   complete_data <- mvrnorm(n, rep(0, p), Sigma)
 
-  # (iii) Inject MCAR missingness (10%)
+  # (iii) Inject MCAR missingness at rate 0.1
   missing_pattern <- matrix(rbinom(n * p, 1, 0.1), n, p)
   data_na <- complete_data
   data_na[missing_pattern == 1] <- NA
