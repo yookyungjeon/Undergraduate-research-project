@@ -94,7 +94,7 @@ for (run in 1:10) {
   imputation_time <- difftime(end_time, start_time, units = "mins")
   time_results <- append(time_results, list(list(run = run, step = "Imputation", time = imputation_time)))
 
-  # 2-4) ROC evaluation against true Omega -----------------
+  # 2-4) ROC evaluation against true Omega 
 
   # True graph as binary (1 = nonzero, 0 = zero)
   Omega_bin <- ifelse(abs(Omega) > 0, 1, 0)
